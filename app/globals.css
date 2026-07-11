@@ -23,3 +23,9 @@ section:not(.hero){padding:96px 7vw}.statement{margin:32px;border-radius:34px;ba
 footer{margin:0;background:#1e201b;padding:65px 7vw;border-radius:0 0 42px 42px}.presenting body{padding:0}.presenting .app{max-width:none;border-radius:0}.presenting .rail,.presenting .topbar{display:none}
 @media(max-width:1100px){.rail nav button:nth-child(n+5){display:none}.hero:before{opacity:.38}.hero h1{max-width:650px}}
 @media(max-width:900px){body{padding:0;background:#f8f7f3}.app{border-radius:0}.rail{display:none}.hero:before{display:none}.hero{background:#ece9e1}.statement{margin:18px}.topbar{padding:0 20px}footer{border-radius:0}}
+
+/* Glassy DLSU campus feature */
+.hero:before{content:"DLSU MANILA  â€¢  CARE IN EVERY DECISION";right:5.5%;top:12%;width:35%;height:60%;border:1px solid #ffffff8c;border-radius:38px;background-image:linear-gradient(145deg,#e8e5d5b0 0%,#5c67438c 55%,#1f2919c7 100%),url('/dlsu-campus.jpg');background-size:cover;background-position:center;color:#fff;padding:28px;font-weight:700;box-shadow:inset 0 1px 0 #fff,0 24px 55px #32362938;backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%);opacity:.9}
+.hero h1{position:relative;z-index:2;max-width:690px}.hero .eyebrow,.hero .lead,.hero .hero-actions{position:relative;z-index:2}.hero .lead{max-width:515px}.hero-grid{z-index:3;background:#ffffffdc;border:1px solid #fff;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+@media(max-width:1100px){.hero:before{width:37%;right:3.5%;opacity:.58}.hero h1{max-width:620px}}
+@media(max-width:900px){.hero:before{display:none}}
