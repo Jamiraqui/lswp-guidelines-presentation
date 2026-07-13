@@ -18,7 +18,7 @@ export default function Home() {
   const [donations, setDonations] = useState(100000);
   const [score, setScore] = useState({urgency:24, academic:16, gap:15, essential:12, proof:8, stewardship:4});
   const total = Object.values(score).reduce((a,b)=>a+b,0);
-  const envelope = Math.round(donations*.7 + (1014100-800000)*.1);
+  const envelope = Math.round(donations*.8);
   const q = query.toLowerCase();
   useEffect(()=>{ document.body.classList.toggle("presenting",present); return()=>document.body.classList.remove("presenting")},[present]);
   const jump = (id:string) => document.getElementById(id)?.scrollIntoView({behavior:"smooth"});
@@ -43,7 +43,7 @@ export default function Home() {
         <div className="hero-actions"><button className="primary" onClick={()=>jump("funding")}>Explore the policy <Icon name="↓"/></button><button className="ghost" onClick={()=>jump("decision")}>View decision points</button></div>
         <div className="hero-grid">
           <div><small>STARTING FUND</small><strong>₱1.014M</strong><p>Available corpus</p></div>
-          <div><small>PROTECTED RESERVE</small><strong>80%</strong><p>₱800,000 floor</p></div>
+          <div><small>CORE SOURCE FUND</small><strong>₱1.014M</strong><p>Not the base for the 80% computation</p></div>
           <div><small>STANDARD AWARD</small><strong>≤ ₱5K</strong><p>Committee approval</p></div>
           <div><small>CORE POSITION</small><strong>Bridge, not subsidy</strong><p>Emergency and welfare assistance</p></div>
         </div>
@@ -52,7 +52,7 @@ export default function Home() {
       <section className="statement" id="decision">
         <span className="section-no">RECOMMENDED POLICY POSITION</span>
         <h2>Protect the fund.<br/>Respond when it matters.</h2>
-        <p>LSWP remains an emergency and welfare assistance fund, not an open-ended scholarship or recurring subsidy. The corpus is protected by a reserve floor, while aid is released from a defined school-year envelope.</p>
+        <p>LSWP remains an emergency and welfare assistance fund, not an open-ended scholarship or recurring subsidy. The existing source fund is preserved, while aid is normally released from a defined school-year envelope based on confirmed annual donations.</p>
         <div className="decision-card"><Icon name="✓"/><div><b>Board decision sought</b><p>Adopt the reserve model, award ceilings, two-track application system, scoring matrix, and accountability controls in these guidelines.</p></div></div>
       </section>
 
@@ -84,9 +84,9 @@ export default function Home() {
 
       <section id="funding">
         <Title n="05" kicker="FUNDING MODEL" title="Spend from the envelope, not the corpus."/>
-        <div className="fund-grid"><div className="fund-visual"><div className="ring"><div><strong>80%</strong><span>protected</span></div></div><div className="legend"><p><i className="green"/>Reserve floor <b>₱800,000</b></p><p><i className="gold"/>Available above floor <b>₱214,100</b></p></div></div>
-        <div className="formula"><div><span>01</span><p><b>Donation split</b><br/>70% to current aid · 30% to reserve</p></div><div><span>02</span><p><b>Surplus draw</b><br/>Up to 10% of balance above the floor</p></div><div><span>03</span><p><b>Carryover</b><br/>Restore reserve first, then next year’s envelope</p></div><div><span>04</span><p><b>Emergency release</b><br/>Below-floor use needs unanimous endorsement and authorized approval</p></div></div></div>
-        <div className="calculator"><div><small>LIVE POLICY CALCULATOR</small><h3>Annual aid envelope</h3><label>Unrestricted annual donations <output>₱{donations.toLocaleString()}</output></label><input type="range" min="0" max="300000" step="10000" value={donations} onChange={e=>setDonations(+e.target.value)}/></div><div className="result"><span>Recommended starting envelope</span><strong>₱{envelope.toLocaleString()}</strong><p>70% donation share + 10% of corpus above the ₱800,000 floor</p><small>≈ {Math.floor(envelope/5000)} standard grants at ₱5,000</small></div></div>
+        <div className="fund-grid"><div className="fund-visual"><div className="ring"><div><strong>80%</strong><span>for current aid</span></div></div><div className="legend"><p><i className="green"/>Current-year aid budget <b>80% of annual unrestricted donations</b></p><p><i className="gold"/>Sustainability savings <b>20% of annual unrestricted donations</b></p></div></div>
+        <div className="formula"><div><span>01</span><p><b>Donation split</b><br/>80% to current aid · 20% to sustainability reserve</p></div><div><span>02</span><p><b>Source-fund protection</b><br/>Preserve the existing ₱1,014,100 as the core source fund</p></div><div><span>03</span><p><b>Carryover</b><br/>Save unused aid funds in the reserve or carry them into next year, subject to Committee and Finance review</p></div><div><span>04</span><p><b>Emergency release</b><br/>Source-fund use beyond the approved budget needs written justification, unanimous Committee endorsement, and authorized institutional or finance approval</p></div></div></div>
+        <div className="calculator"><div><small>LIVE POLICY CALCULATOR</small><h3>Annual aid envelope</h3><label>Unrestricted annual donations <output>₱{donations.toLocaleString()}</output></label><input type="range" min="0" max="300000" step="10000" value={donations} onChange={e=>setDonations(+e.target.value)}/></div><div className="result"><span>Recommended starting envelope</span><strong>₱{envelope.toLocaleString()}</strong><p>80% of confirmed unrestricted annual donations</p><small>≈ {Math.floor(envelope/5000)} standard grants at ₱5,000</small></div></div>
         <div className="award-table"><div className="thead"><span>AWARD TYPE</span><span>CEILING</span><span>APPROVAL STANDARD</span></div>{[
           ["Standard","Up to ₱5,000","Committee approval based on eligibility, urgency, and envelope."],
           ["Enhanced","₱5,001–₱15,000","Stronger documentation and written basis that standard aid is insufficient."],
