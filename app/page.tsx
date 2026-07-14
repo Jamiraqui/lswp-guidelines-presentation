@@ -2,138 +2,80 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const sections = [
-  ["overview", "01", "Mandate"], ["principles", "02", "Principles"], ["aid", "03", "Aid categories"],
-  ["eligibility", "04", "Eligibility"], ["funding", "05", "Funding policy"], ["priority", "06", "Priority scoring"],
-  ["repeat", "07", "Repeat aid"], ["tracks", "08", "Application tracks"], ["documents", "09", "Documents"],
-  ["governance", "10", "Governance"], ["communication", "11", "Communication"], ["privacy", "12", "Privacy"],
-  ["controls", "13", "Risk controls"], ["undertaking", "14–15", "Commitments"], ["reporting", "16", "Reporting"], ["appendices", "A–D", "Appendices"]
+const LINKS = {
+  english: "https://forms.gle/9uacvDpxwrxcwGUi8",
+  accounting: "https://docs.google.com/forms/d/e/1FAIpQLScgQyKPqdxRP8ty_ZMIN3e7Tx2ohsG4kIAHHbcqE1BVc5D3ag/viewform?usp=header",
+  science: "https://forms.gle/gFfqz7fVCSrfAjUM6",
+  engineering: "https://forms.gle/rR8i2K4mBzp4AEmS9",
+  welfareEmail: "amir.austria@dlsu.edu.ph",
+  officialEmail: "ssc@dlsu.edu.ph",
+  facebook: "https://www.facebook.com/dlsu.ssc/",
+} as const;
+
+type Session = { service: string; category: string; subject: string; date?: string; recurring?: string; time: string; tutor: string; mode?: "Online" | "On-site"; venue?: string; audience?: string; link: string };
+
+const dated = (service:string, category:string, subject:string, tutor:string, link:string, dates:string[], time:string):Session[] => dates.map(date=>({service,category,subject,tutor,link,date,time}));
+const sessions: Session[] = [
+  {service:"English Language Tutorial",category:"English",subject:"English support for graduate students and employees",recurring:"Tuesday and Friday",time:"6:00–7:30 PM",tutor:"Mr. Allan Villaverde",mode:"Online",audience:"Graduate students and DLSU employees",link:LINKS.english},
+  {service:"English Language Tutorial",category:"English",subject:"Grammar and Writing",recurring:"Tuesday and Friday",time:"9:15–10:45 AM",tutor:"Ms. Maria Ana de Guzman",mode:"Online",audience:"SHS, undergraduate students, and employees",link:LINKS.english},
+  {service:"English Language Tutorial",category:"English",subject:"Grammar and Writing",recurring:"Wednesday and Thursday",time:"6:00–7:30 PM",tutor:"Dr. Marilou Santos",mode:"Online",audience:"SHS, undergraduate students, and employees",link:LINKS.english},
+  {service:"English Language Tutorial",category:"English",subject:"Speaking and Oral Presentation Skills",recurring:"Tuesday and Friday",time:"11:00 AM–12:30 PM",tutor:"Mr. Dennis Villacorta",mode:"Online",audience:"SHS, undergraduate students, and employees",link:LINKS.english},
+  {service:"English Language Tutorial",category:"English",subject:"Speaking and Oral Presentation Skills",recurring:"Tuesday",time:"6:00–7:30 PM",tutor:"Ms. Rubie Sajise",mode:"Online",audience:"SHS, undergraduate students, and employees",link:LINKS.english},
+  {service:"English Language Tutorial",category:"English",subject:"Speaking and Oral Presentation Skills",recurring:"Friday",time:"9:15–10:45 AM",tutor:"Ms. Rubie Sajise",mode:"On-site",venue:"A1410",audience:"SHS, undergraduate students, and employees",link:LINKS.english},
+  ...dated("Accounting Tutorial and Review Classes","Accounting","Special Tutorials for ACCOB 3","",LINKS.accounting,["2026-07-04"],"8:00–9:30 PM"),
+  ...dated("Accounting Tutorial and Review Classes","Accounting","Introduction to Accounting and the Accounting Cycle","",LINKS.accounting,["2026-07-06","2026-07-10","2026-07-13"],"6:30–8:00 PM"),
+  ...dated("Accounting Tutorial and Review Classes","Accounting","Introduction to Accounting and the Accounting Cycle","",LINKS.accounting,["2026-07-06","2026-07-10","2026-07-13"],"8:30–10:00 PM"),
+  ...dated("Accounting Tutorial and Review Classes","Accounting","Accounting for Merchandising","",LINKS.accounting,["2026-07-17","2026-07-20","2026-07-24"],"6:30–8:00 PM"),
+  ...dated("Accounting Tutorial and Review Classes","Accounting","Accounting for Merchandising","",LINKS.accounting,["2026-07-17","2026-07-20","2026-07-24"],"8:30–10:00 PM"),
+  ...dated("Science Tutorial and Review Classes","Science","Mth101A","Mr. Edward Concepcion",LINKS.science,["2026-07-07","2026-07-10","2026-07-14","2026-07-17","2026-07-21","2026-07-24"],"4:00–5:00 PM"),
+  ...dated("Science Tutorial and Review Classes","Science","Organic Chemistry","Dr. Virgilio Ebajo Jr.",LINKS.science,["2026-07-13","2026-07-16","2026-07-20","2026-07-23"],"4:00–5:00 PM"),
+  ...dated("Science Tutorial and Review Classes","Science","Systematics","Ms. Sarah Zamudio",LINKS.science,["2026-07-14","2026-07-21"],"10:00–11:00 AM"),
+  ...dated("Science Tutorial and Review Classes","Science","Systematics","Ms. Sarah Zamudio",LINKS.science,["2026-07-16","2026-07-23"],"4:00–5:00 PM"),
+  ...dated("Science Tutorial and Review Classes","Science","Cell and Molecular Biology","Dr. Paul Benedic Salvador",LINKS.science,["2026-07-15","2026-07-17","2026-07-22","2026-07-24"],"9:30–10:30 AM"),
+  {service:"Engineering Tutorial and Review Classes",category:"Engineering",subject:"CALENG2 and CALENG3",recurring:"Wednesday",time:"10:00–11:00 AM",tutor:"Engr. Marc Dylan M. Lipit",link:LINKS.engineering},
+  {service:"Engineering Tutorial and Review Classes",category:"Engineering",subject:"CALENG1 and CALENG2",recurring:"Thursday",time:"6:00–7:00 PM",tutor:"Engr. Cary Albert D. Chan",link:LINKS.engineering},
+  {service:"Engineering Tutorial and Review Classes",category:"Engineering",subject:"FNDSTAT, DATAENG, and BASCHEM",recurring:"Friday",time:"6:00–7:00 PM",tutor:"Engr. Piolo Gabriel N. Gervacio",link:LINKS.engineering},
+  {service:"Engineering Tutorial and Review Classes",category:"Engineering",subject:"FNDMATH",recurring:"Wednesday",time:"9:30–10:30 AM",tutor:"Engr. Jesus Patrick Nuqui",link:LINKS.engineering},
+  {service:"Engineering Tutorial and Review Classes",category:"Engineering",subject:"CALENG1 and CALENG3",recurring:"Friday",time:"1:00–2:00 PM",tutor:"Engr. Ithan Jessemar Dollente",link:LINKS.engineering},
 ];
 
-const Icon = ({name}:{name:string}) => <span className="icon" aria-hidden>{name}</span>;
+const services = [
+  ["English Language Tutorial","Grammar, writing, speaking, and oral presentation support for specified student groups and employees.","English",LINKS.english],
+  ["Accounting Tutorial and Review Classes","Sessions on ACCOB 3, the accounting cycle, and accounting for merchandising.","Accounting",LINKS.accounting],
+  ["Science Tutorial and Review Classes","Support for mathematics, organic chemistry, systematics, and cell and molecular biology.","Science",LINKS.science],
+  ["Engineering Tutorial and Review Classes","Tutorials for CALENG, FNDSTAT, DATAENG, BASCHEM, and FNDMATH courses.","Engineering",LINKS.engineering],
+] as const;
 
-export default function Home() {
-  const [present, setPresent] = useState(false);
-  const [query, setQuery] = useState("");
-  const [donations, setDonations] = useState(100000);
-  const [score, setScore] = useState({urgency:24, academic:16, gap:15, essential:12, proof:8, stewardship:4});
-  const total = Object.values(score).reduce((a,b)=>a+b,0);
-  const envelope = Math.round(donations*.8);
-  const q = query.toLowerCase();
-  useEffect(()=>{ document.body.classList.toggle("presenting",present); return()=>document.body.classList.remove("presenting")},[present]);
-  const jump = (id:string) => document.getElementById(id)?.scrollIntoView({behavior:"smooth"});
+const formatDate=(d:string)=>new Intl.DateTimeFormat("en-PH",{month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T12:00:00"));
+const status=(d?:string)=>{ if(!d)return "Recurring"; const today="2026-07-12"; return d===today?"Today":d>today?"Upcoming":"Completed" };
 
-  return <div className="app">
-    <aside className="rail">
-      <div className="brand"><div className="mark">L</div><div><b>LSWP</b><small>Policy briefing</small></div></div>
-      <nav>{sections.map(([id,n,label])=><button key={id} onClick={()=>jump(id)}><span>{n}</span>{label}</button>)}</nav>
-      <div className="rail-note">Draft policy<br/><b>29 June 2026</b></div>
-    </aside>
-
+export default function Home(){
+  const [menu,setMenu]=useState(false), [cat,setCat]=useState("All Services"), [query,setQuery]=useState(""), [mode,setMode]=useState("All"), [audience,setAudience]=useState("All"), [dateState,setDateState]=useState("All"), [view,setView]=useState<"cards"|"list">("cards"), [active,setActive]=useState("home");
+  useEffect(()=>{const obs=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&setActive(e.target.id)),{rootMargin:"-35% 0px -55%"}); document.querySelectorAll("main section[id]").forEach(x=>obs.observe(x)); return()=>obs.disconnect()},[]);
+  const audiences=useMemo(()=>["All",...Array.from(new Set(sessions.map(x=>x.audience).filter(Boolean) as string[]))],[]);
+  const filtered=useMemo(()=>sessions.filter(s=>(cat==="All Services"||s.category===cat)&&(mode==="All"||s.mode===mode)&&(audience==="All"||s.audience===audience)&&(dateState==="All"||status(s.date)===dateState)&&(`${s.service} ${s.subject} ${s.tutor} ${s.audience||""}`.toLowerCase().includes(query.toLowerCase()))).sort((a,b)=>(a.date||"9999").localeCompare(b.date||"9999")),[cat,query,mode,audience,dateState]);
+  const clear=()=>{setCat("All Services");setQuery("");setMode("All");setAudience("All");setDateState("All")};
+  const nav=["Home","About","Services","Schedule","Upcoming","Welfare Support","Contact"];
+  return <>
+    <header className="nav"><a className="brand" href="#home"><span className="sscLogo" role="img" aria-label="Student Success Center logo"/><span><b>Academic Support Hub</b><small>De La Salle University · Student Success Center</small></span></a><button className="menu" aria-label="Toggle navigation" aria-expanded={menu} onClick={()=>setMenu(!menu)}>☰</button><nav className={menu?"open":""} aria-label="Main navigation">{nav.map(n=><a key={n} className={active===n.toLowerCase().replace(" support","")?"active":""} href={`#${n.toLowerCase().replaceAll(" ","-").replace("-support","")}`} onClick={()=>setMenu(false)}>{n}</a>)}<a className="navCta" href="#services">Find Support</a></nav></header>
     <main>
-      <header className="topbar">
-        <div className="search"><Icon name="⌕"/><input aria-label="Search guidelines" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search the guidelines"/><kbd>⌘ K</kbd></div>
-        <button className="outline" onClick={()=>setPresent(!present)}><Icon name={present?"×":"▣"}/>{present?"Exit presentation":"Present"}</button>
-      </header>
+      <section id="home" className="hero"><div className="heroPanel"><div className="heroCopy"><p className="eyebrow">Student Success Center · De La Salle University</p><h1>Support for<br/><em>every step.</em></h1><p className="lead">Find tutorials, review classes, learning support, and student welfare assistance designed to help you persist, progress, and thrive.</p><div className="actions"><a className="primary" href="#services">Explore Support ↗</a><a className="secondary" href="#schedule">View Schedule</a></div></div><div className="brandImage finalHero"><img src="/final.png" alt="Collage of DLSU students studying within the Academic Support Hub step symbol"/></div><div className="servicePills">{["English","Accounting","Science","Engineering","Student Welfare"].map(x=><a key={x} href={x==="Student Welfare"?"#welfare":"#services"}>✦ {x}</a>)}</div></div><div className="heroMeta"><span>Academic Support Hub</span><span>Term 3 · AY 2025–2026</span><span>Helping Lasallians thrive</span></div></section>
 
-      <section className="hero" id="overview">
-        <div className="eyebrow"><span/>BOARD POLICY BRIEF · COMPREHENSIVE GUIDELINES</div>
-        <h1>Lasallian Student<br/><em>Welfare Program Aid</em></h1>
-        <p className="lead">A protected, need-based fund for urgent student welfare, academic continuity, and crisis response.</p>
-        <div className="hero-actions"><button className="primary" onClick={()=>jump("funding")}>Explore the policy <Icon name="↓"/></button><button className="ghost" onClick={()=>jump("decision")}>View decision points</button></div>
-        <div className="hero-grid">
-          <div><small>STARTING FUND</small><strong>₱1.014M</strong><p>Available corpus</p></div>
-          <div><small>CORE SOURCE FUND</small><strong>₱1.014M</strong><p>Not the base for the 80% computation</p></div>
-          <div><small>STANDARD AWARD</small><strong>≤ ₱5K</strong><p>Committee approval</p></div>
-          <div><small>CORE POSITION</small><strong>Bridge, not subsidy</strong><p>Emergency and welfare assistance</p></div>
-        </div>
-      </section>
+      <section id="about" className="about shell"><div><p className="eyebrow green">About the unit</p><h2>Support that begins before a student falls behind.</h2><div className="campusFrame" role="img" aria-label="St. La Salle Hall at De La Salle University"><span>ANIMO<br/>LA SALLE</span></div></div><div className="aboutGrid"><article><span>01</span><h3>More than tutorials</h3><p>The Academic Support Unit uses a tiered, proactive, and student-centered model. Its work includes learning interventions, study skills development, academic coaching, referral and matching, peer-led and faculty-led support, and targeted guidance.</p></article><article><span>02</span><h3>Responsive academic help</h3><p>Through the Lasallian SHiNE Program, the unit offers tutorial and review sessions for high-impact and high-need courses identified through student demand, academic performance, and college or faculty recommendations.</p></article><article><span>03</span><h3>Capacity and partnership</h3><p>Support includes time management, study strategies, exam preparation, academic recovery planning, and learning strategies, delivered with faculty, departments, student organizations, and student support offices.</p></article></div><blockquote>Academic success goes beyond tutorials. It also requires coordinated support, early intervention, student welfare assistance, and partnerships that help students persist, progress, and thrive.</blockquote></section>
 
-      <section className="statement" id="decision">
-        <span className="section-no">RECOMMENDED POLICY POSITION</span>
-        <h2>Protect the fund.<br/>Respond when it matters.</h2>
-        <p>LSWP remains an emergency and welfare assistance fund, not an open-ended scholarship or recurring subsidy. The existing source fund is preserved, while aid is normally released from a defined school-year envelope based on confirmed annual donations.</p>
-        <div className="decision-card"><Icon name="✓"/><div><b>Board decision sought</b><p>Adopt the reserve model, award ceilings, two-track application system, scoring matrix, and accountability controls in these guidelines.</p></div></div>
-      </section>
+      <section id="services" className="services shell"><div className="sectionHead"><div><p className="eyebrow green">Term 3 AY 2025–2026</p><h2>Available academic support</h2></div><p>SSC has identified high-priority courses based on student demand, academic performance, and administrative recommendations.</p></div><div className="serviceGrid">{services.map((s,i)=><article className="serviceCard" key={s[0]}><span className="number">0{i+1}</span><span className="tag">{s[2]}</span><h3>{s[0]}</h3><p>{s[1]}</p><div><a href="#schedule" onClick={()=>setCat(s[2])}>View schedule</a><a className="register" href={s[3]} target="_blank" rel="noopener noreferrer">Register ↗</a></div></article>)}<article className="serviceCard welfareMini"><span className="number">05</span><span className="tag">Welfare Support</span><h3>Lasallian Welfare Program</h3><p>Support addressing financial or material barriers that may affect academic participation and continuity.</p><div><a href="#welfare">Explore support</a></div></article></div></section>
 
-      <section id="principles">
-        <Title n="02" kicker="GOVERNING VALUES" title="Five principles shape every decision."/>
-        <div className="principles">{[
-          ["01","Essentialness","Necessary, time-sensitive, and directly tied to welfare or academic continuity."],
-          ["02","Equity","Apply the same criteria regardless of college, organization, recommender, or visibility."],
-          ["03","Sustainability","Preserve capacity for future students; never exhaust the corpus in one year."],
-          ["04","Dignity & confidentiality","Treat students respectfully and restrict sensitive information to need-to-know roles."],
-          ["05","Accountability","Record the basis, budget source, disbursement trail, and proportionate follow-up."]
-        ].map(x=><article key={x[0]}><span>{x[0]}</span><div><h3>{x[1]}</h3><p>{x[2]}</p></div></article>)}</div>
-      </section>
+      <section id="schedule" className="schedule"><div className="scheduleImage" role="img" aria-label="Henry Sy Sr. Hall at De La Salle University"><span>YOUR NEXT<br/>STEP STARTS HERE.</span></div><div className="shell"><div className="sectionHead light"><div><p className="eyebrow lime">Session Schedule</p><h2>Find your next session.</h2></div><div className="viewToggle"><button className={view==="cards"?"on":""} onClick={()=>setView("cards")}>Cards</button><button className={view==="list"?"on":""} onClick={()=>setView("list")}>List</button></div></div>{filtered.length===0?<div className="empty"><b>No sessions match your filters.</b><p>Try another keyword or clear the filters to see all available sessions.</p><button onClick={clear}>Clear filters</button></div>:view==="cards"?<div className="sessionGrid">{filtered.map((s,i)=><SessionCard s={s} key={`${s.subject}-${s.date}-${s.time}-${i}`}/>)}</div>:<div className="tableWrap"><table><thead><tr><th>Session</th><th>When</th><th>Tutor</th><th>Mode / audience</th><th></th></tr></thead><tbody>{filtered.map((s,i)=><tr key={i}><td><small>{s.category}</small><b>{s.subject}</b></td><td>{s.date?formatDate(s.date):s.recurring}<br/>{s.time}</td><td>{s.tutor||"Not specified"}</td><td>{[s.mode,s.venue,s.audience].filter(Boolean).join(" · ")||"Not specified"}</td><td><a href={s.link} target="_blank" rel="noopener noreferrer">Register ↗</a></td></tr>)}</tbody></table></div>}</div></section>
 
-      <section id="aid">
-        <Title n="03" kicker="WHAT THE FUND SUPPORTS" title="Three aid categories. One welfare purpose."/>
-        <div className="cards three">
-          <PolicyCard icon="✚" title="Emergency Health Aid" text="Urgent health expenses affecting safety, recovery, or continued study." items={["Hospital or clinic bills","Emergency procedures and medicines","Diagnostics and assistive needs","Mental health crisis referral costs"]}/>
-          <PolicyCard icon="▤" title="Student Life Assistance" text="Short-term essentials for meaningful participation and academic continuity." items={["Transportation and meals","Books and supplies","Thesis or capstone requirements","Completion or graduating expenses"]}/>
-          <PolicyCard icon="⌂" title="Emergency Relief Fund" text="Relief after disaster, family shock, displacement, or life-altering accident." items={["Fire, flood, or displacement","Loss of housing","Death or incapacity of provider","Verified crisis essentials"]}/>
-        </div>
-      </section>
+      <section id="upcoming" className="upcoming shell"><div className="sectionHead"><div><p className="eyebrow green">In development</p><h2>Upcoming support</h2></div><p>More ways to support Lasallian learning are coming soon.</p></div><div className="upGrid">{[{name:"Filipino Tutorial",icon:"speech"},{name:"STARS: Study Teams for Academic Resilience and Success",icon:"stars"},{name:"Academic Life Management",icon:"plan"}].map((x,i)=><article key={x.name}><div className={`upIcon ${x.icon}`} aria-hidden="true"><i/><i/><i/></div><span>Coming Soon</span><b>0{i+1}</b><h3>{x.name}</h3></article>)}</div></section>
 
-      <section id="eligibility">
-        <Title n="04" kicker="ELIGIBILITY" title="A clear gate before discretion."/>
-        <div className="split"><div className="panel yes"><h3><Icon name="✓"/> Basic eligibility</h3><ul>{["Currently enrolled at application and disbursement, unless a completion-related exception is approved.","Request fits an approved category and shows a clear, verifiable need.","Required documents, verification consent, and post-release reporting are accepted.","All other coverage or aid for the same expense is disclosed."].map(i=><li key={i}>{i}</li>)}</ul></div>
-        <div className="panel no"><h3><Icon name="×"/> Non-eligible or lower priority</h3><ul>{["Recurring tuition or full-term living expenses better addressed through long-term support.","Non-essential purchases, fines, recreation, dues, events, or unrelated expenses.","Old debts without a current emergency and no safer alternative.","Duplicate support, unless new information proves earlier aid became insufficient."].map(i=><li key={i}>{i}</li>)}</ul></div></div>
-      </section>
+      <section id="welfare" className="welfare"><div className="shell"><div className="welfareIntro"><div><p className="eyebrow lime">Lasallian Welfare Program</p><h2>Support for the barriers beyond the classroom.</h2></div><p>The program forms part of the broader academic support ecosystem by helping address financial or material barriers that may affect a student’s academic participation and continuity.</p></div><div className="welfareGrid"><Welfare title="Student Emergency Health Aid">Emergency or urgent health-related expenses that affect safety, recovery, or the ability to continue studies.</Welfare><Welfare title="Student Life Assistance Program">Short-term support for essential student participation and academic continuity.</Welfare><Welfare title="Student Emergency Relief Fund">Relief following disasters, emergency crises, family shocks, or life-altering accidents.</Welfare></div><a className="primary limeBtn" href={`mailto:${LINKS.welfareEmail}`}>Contact About Welfare Support ↗</a></div></section>
 
-      <section id="funding">
-        <Title n="05" kicker="FUNDING MODEL" title="Spend from the envelope, not the corpus."/>
-        <div className="fund-grid"><div className="fund-visual"><div className="ring"><div><strong>80%</strong><span>for current aid</span></div></div><div className="legend"><p><i className="green"/>Current-year aid budget <b>80% of annual unrestricted donations</b></p><p><i className="gold"/>Sustainability savings <b>20% of annual unrestricted donations</b></p></div></div>
-        <div className="formula"><div><span>01</span><p><b>Donation split</b><br/>80% to current aid · 20% to sustainability reserve</p></div><div><span>02</span><p><b>Source-fund protection</b><br/>Preserve the existing ₱1,014,100 as the core source fund</p></div><div><span>03</span><p><b>Carryover</b><br/>Save unused aid funds in the reserve or carry them into next year, subject to Committee and Finance review</p></div><div><span>04</span><p><b>Emergency release</b><br/>Source-fund use beyond the approved budget needs written justification, unanimous Committee endorsement, and authorized institutional or finance approval</p></div></div></div>
-        <div className="calculator"><div><small>LIVE POLICY CALCULATOR</small><h3>Annual aid envelope</h3><label>Unrestricted annual donations <output>₱{donations.toLocaleString()}</output></label><input type="range" min="0" max="300000" step="10000" value={donations} onChange={e=>setDonations(+e.target.value)}/></div><div className="result"><span>Recommended starting envelope</span><strong>₱{envelope.toLocaleString()}</strong><p>80% of confirmed unrestricted annual donations</p><small>≈ {Math.floor(envelope/5000)} standard grants at ₱5,000</small></div></div>
-        <div className="award-table"><div className="thead"><span>AWARD TYPE</span><span>CEILING</span><span>APPROVAL STANDARD</span></div>{[
-          ["Standard","Up to ₱5,000","Committee approval based on eligibility, urgency, and envelope."],
-          ["Enhanced","₱5,001–₱15,000","Stronger documentation and written basis that standard aid is insufficient."],
-          ["Exceptional","₱15,001–₱25,000","Expanded approval, finance confirmation, and severe or completion-critical finding."],
-          ["Beyond ceiling","Above ₱25,000","Not routine LSWP aid. Refer to scholarship, crisis fund, fundraising, insurance, or institutional approval."]
-        ].map(r=><div className="tr" key={r[0]}><b>{r[0]}</b><strong>{r[1]}</strong><p>{r[2]}</p></div>)}</div><p className="fine">Caps are ceilings, not entitlements. Partial awards are allowed. Direct payment to a provider, supplier, clinic, landlord, or university office is preferred when practical and respectful of privacy.</p>
-      </section>
-
-      <section id="priority">
-        <Title n="06" kicker="PRIORITY MATRIX" title="Make a sample decision in real time."/>
-        <div className="scorecard"><div>{Object.entries({urgency:["Urgency & safety risk",30],academic:["Academic continuity",20],gap:["Financial gap & alternatives",20],essential:["Essentialness & proportionality",15],proof:["Documentation",10],stewardship:["Program stewardship",5]}).map(([k,[label,max]])=><label key={k}><span>{label}<b>{score[k as keyof typeof score]} / {max}</b></span><input type="range" min="0" max={max as number} value={score[k as keyof typeof score]} onChange={e=>setScore({...score,[k]:+e.target.value})}/></label>)}</div><div className={`score ${total>=80?"high":total>=60?"eligible":total>=40?"wait":"low"}`}><span>PRIORITY SCORE</span><strong>{total}</strong><small>/ 100</small><h3>{total>=80?"High priority":total>=60?"Eligible, subject to funds":total>=40?"Waitlist, partial aid, or referral":"Generally not approved"}</h3><p>{total<80?"New evidence may change the result.":"Proceed to committee review and available-envelope check."}</p></div></div>
-      </section>
-
-      <section id="repeat"><Title n="07" kicker="REPEAT REQUESTS" title="One grant per year is the default."/><p className="intro">A repeat request is an exception for a distinct, material, and unforeseeable need. It must not turn short-term relief into recurring subsidy.</p><div className="checks">{["New emergency, diagnosis, disaster impact, or escalation","Prior utilization report, receipt, provider proof, or reasonable attestation","No duplicate expense paid by LSWP or another source","One academic year since release, unless urgent","Aggregate aid stays within the cap, unless exceptionally approved"].map(x=><div key={x}><Icon name="✓"/>{x}</div>)}</div><div className="cap-row"><div><small>ROUTINE STUDENT LIFE</small><b>₱10,000</b><p>Second grant usually no larger than first.</p></div><div><small>COMPLETION-CRITICAL</small><b>₱15,000</b><p>Confirm completion and required cost.</p></div><div><small>SEVERE CRISIS</small><b>₱25,000</b><p>Expanded approval and exception memo.</p></div></div></section>
-
-      <section id="tracks"><Title n="08" kicker="APPLICATION TRACKS" title="Urgency changes speed, not accountability."/><div className="track-grid"><Track urgent/><Track/></div></section>
-
-      <section id="documents"><Title n="09" kicker="EVIDENCE" title="Require what is useful, safe, and proportionate."/><div className="doc-grid">{[
-        ["Emergency Health","Medical certificate, bill, prescription, diagnostic request, quotation, insurance note, discharge instruction, or clinician referral."],
-        ["Student Life","Book or supply quotation, thesis estimate, transport estimate, meal need statement, adviser confirmation, or completion certification."],
-        ["Emergency Relief","Incident or disaster certification, barangay certificate, photos, quotation, death certificate, unemployment notice, police report, or social worker note."],
-        ["Repeat Request","Prior utilization report, receipts or payee confirmation, explanation of new emergency, updated intent letter, and updated proof."]].map(([a,b])=><article key={a}><h3>{a}</h3><p>{b}</p></article>)}</div><div className="callout"><Icon name="!"/><p><b>Compassionate evidence rule</b><br/>Do not demand documents that are impossible or unsafe to obtain during a crisis. Preliminary proof may support expedited release, with follow-up verification.</p></div></section>
-
-      <section id="governance"><Title n="10" kicker="SCREENING · APPROVAL · DISBURSEMENT" title="Separate judgment, release, and accountability."/><div className="flow"><div><span>1</span><b>Intake</b><small>Completeness & verification</small></div><i>→</i><div><span>2</span><b>Committee review</b><small>Score, conflict check, record</small></div><i>→</i><div><span>3</span><b>Approval</b><small>At least 3 voting members</small></div><i>→</i><div><span>4</span><b>Disbursement</b><small>Direct pay preferred</small></div><i>→</i><div><span>5</span><b>Follow-up</b><small>Proof, ledger, referral</small></div></div><div className="govern-grid"><div><h3>Committee and quorum</h3><p>Voting members may include the Academic Support Coordinator, Student Success Director, Dean and Associate Dean of Student Affairs. Authorized SSC and OSA staff may serve as non-voting members.</p><ul><li>Routine approval: at least 3 voting members</li><li>Enhanced/exceptional: written justification and chair or Dean approval</li><li>Conflicted member discloses and recuses</li><li>No single person approves, releases, and liquidates end-to-end</li></ul></div><div><h3>Decision record</h3><ul><li>Identity, program, and enrollment status</li><li>Category, request, approval, and funding source</li><li>Track, evidence, interview/testimony, and score</li><li>Reason for decision or referral</li><li>Payee, liquidation, and follow-up date</li></ul></div><div><h3>Disbursement controls</h3><ul><li>Direct provider payment when practical</li><li>Proportionate receipt, acknowledgement, or attestation</li><li>Flag duplicate payees, receipts, expenses, and unusual recommender clusters</li><li>Live ledger of envelope, commitments, releases, pending cases, and balance</li></ul></div></div></section>
-
-      <section id="communication"><Title n="11" kicker="APPLICANT EXPERIENCE" title="Clear, respectful, and time-bound communication."/><div className="timeline"><div><b>Official channel</b><p>University email and applicant contact number</p></div><div><b>Approval notice</b><p>Amount, purpose, method, liquidation, follow-up</p></div><div><b>Denial or waitlist</b><p>Brief reasons and referrals where possible</p></div><div><b>Reconsideration</b><p>Within 5 working days, only for new evidence, corrected documents, or procedural error</p></div></div></section>
-
-      <section id="privacy"><Title n="12" kicker="CONFIDENTIALITY & RECORDS" title="Need-to-know access. Anonymized accountability."/><div className="privacy"><div className="lock">⌾</div><div><h3>Information is shared only for evaluation, approval, disbursement, audit, referral, or support.</h3><div className="mini-grid"><p><b>Minimize</b><br/>Collect only what is necessary.</p><p><b>Consent</b><br/>Obtain written consent for verification and extra disclosure.</p><p><b>Restrict</b><br/>Use role-based storage access.</p><p><b>Retain responsibly</b><br/>Follow institutional retention, then securely dispose.</p><p><b>Report safely</b><br/>Use anonymized summaries unless separate consent is given.</p></div></div></div></section>
-
-      <section id="controls"><Title n="13" kicker="LOOPHOLES & CONTROLS" title="Design against predictable failure."/><div className="risk-table">{[
-        ["Early fund depletion","Set an annual envelope, phase funds by term/month, waitlist, and rank by priority."], ["Recurring subsidy","One-grant default, new-emergency test, utilization report, cooling period, and caps."], ["Recommender bias","Testimony expedites; it never guarantees. Require conflicts and uniform scoring."], ["Double funding","Disclosure, coordination with other offices, and a shared grant ledger."], ["Fraud or exaggeration","Verify suspicious/high-value proof, prefer direct payees, and state consequences."], ["Unclear donor restrictions","Tag restricted and unrestricted donations; follow donor intent."], ["Privacy leakage","Limit access, require extra-disclosure consent, anonymize reports."], ["Unchecked emergency release","Small provisional cap, three authorizers, next-meeting ratification."], ["Oversized grants","Award ceilings, enhanced rules, exceptional approvals."], ["Long-term hardship","Refer to scholarships, counseling, student success, social services, or fundraising."]].filter(r=>!q||r.join(" ").toLowerCase().includes(q)).map(([risk,control])=><div key={risk}><b>{risk}</b><p>{control}</p><span>CONTROLLED</span></div>)}</div></section>
-
-      <section id="undertaking"><Title n="14–15" kicker="TWO-WAY COMMITMENT" title="Testimony supports. The student undertakes."/><div className="split"><div className="panel"><h3>Character testimony</h3><p>Includes identity and relationship, direct observations, hardship and urgency, conflict declaration, consent to verification, and whether the student can safely await regular processing.</p><blockquote>“This testimony supports review but does not guarantee approval.”</blockquote></div><div className="panel"><h3>Student undertaking after release</h3><ul><li>Use aid only for the approved purpose</li><li>Submit proof by the stated deadline, unless waived</li><li>Return unused funds or seek written redirection approval</li><li>Accept recovery, future ineligibility, or conduct referral for falsification, duplicate-aid concealment, or misuse</li></ul></div></div></section>
-
-      <section id="reporting"><Title n="16" kicker="REVIEW & REPORTING" title="Measure stewardship without exposing students."/><div className="metrics">{["Opening balance","Donations","Aid envelope","Applications","Approvals","Denials","Waitlisted","Total disbursed","Average award","Categories served","Repeat requests","Ending balance"].map(x=><span key={x}>{x}</span>)}</div><p className="intro">Prepare a termly anonymized report. Review ceilings, reserve floor, and scoring at least annually. Use anonymized case patterns, unmet demand, average grants, and reach to strengthen fundraising.</p></section>
-
-      <section id="appendices"><Title n="A–D" kicker="IMPLEMENTATION KIT" title="Ready-to-use forms and process aids."/><div className="appendix-grid">{[
-        ["A","Process summary","Side-by-side triggers, intake, interview, decision targets, and safeguards for both tracks."],
-        ["B","Application letter","Identity, enrollment, category, need, amount, other support, declarations, consent, and attachments."],
-        ["C","Data privacy consent","Voluntary consent for collection, use, storage, verification, processing, authorized purposes, access, correction, and withdrawal."],
-        ["D","Character testimony","Recommender identity, relationship, direct knowledge, need, conflict declaration, attestation, verification consent, and signature."]].map(([l,t,d])=><article key={l}><span>{l}</span><h3>{t}</h3><p>{d}</p></article>)}</div><div className="track-summary"><div><b>EXPEDITED</b><span>Urgent + credible testimony</span><strong>1–3 working days</strong><small>24–48 hours for provisional aid</small></div><div><b>REGULAR</b><span>No recommender / non-urgent / fuller review</span><strong>5 working days</strong><small>Decision after complete submission; disbursement normally within 10 working days</small></div></div></section>
-
-      <footer><div className="mark">L</div><p><b>Lasallian Student Welfare Program Aid</b><br/>Comprehensive Guidelines · Board Policy Brief</p><span>Student Welfare Fund<br/><b>Account #61018701</b></span><button onClick={()=>scrollTo({top:0,behavior:"smooth"})}>Back to top ↑</button></footer>
+      <section id="contact" className="contact shell"><div className="contactCard"><div className="contactCopy"><p className="eyebrow green">Connect with us</p><h2>Not sure where to begin?</h2><p>Contact the Student Success Center at De La Salle University.</p><div className="actions"><a className="primary" href={`mailto:${LINKS.officialEmail}`}>Email the Student Success Center</a><a className="secondary" href={LINKS.facebook} target="_blank" rel="noopener noreferrer">Visit Our Facebook Page ↗</a></div></div><div className="contactPhoto" role="img" aria-label="Yuchengco Hall at De La Salle University"><span>HERE<br/>WITH YOU.</span></div></div></section>
     </main>
-  </div>
+    <footer><div className="footerPhoto" role="img" aria-label="Yuchengco Hall at De La Salle University"><span>Helping Lasallians<br/>persist, progress, and thrive.</span></div><div className="shell footerGrid"><div><span className="footerLogo" role="img" aria-label="Student Success Center logo"/><h3>Student Success Center</h3><p>Academic Support Hub · De La Salle University</p></div><div><h4>Navigate</h4>{nav.slice(1).map(n=><a key={n} href={`#${n.toLowerCase().replaceAll(" ","-").replace("-support","")}`}>{n}</a>)}</div><div><h4>Contact</h4><a href={`mailto:${LINKS.officialEmail}`}>{LINKS.officialEmail}</a><a href={LINKS.facebook} target="_blank" rel="noopener noreferrer">Facebook ↗</a></div></div></footer><a className="top" href="#home" aria-label="Back to top">↑</a>
+  </>;
 }
 
-function Title({n,kicker,title}:{n:string,kicker:string,title:string}){return <div className="title"><span>{n}</span><div><small>{kicker}</small><h2>{title}</h2></div></div>}
-function PolicyCard({icon,title,text,items}:{icon:string,title:string,text:string,items:string[]}){return <article className="policy-card"><Icon name={icon}/><h3>{title}</h3><p>{text}</p><ul>{items.map(i=><li key={i}>{i}</li>)}</ul></article>}
-function Track({urgent=false}:{urgent?:boolean}){return <article className={`track ${urgent?"urgent":""}`}><div className="track-head"><span>{urgent?"EXPEDITED":"REGULAR"}</span><b>{urgent?"Urgent + testimony":"Full assessment"}</b></div><p>{urgent?"Delay may harm health, safety, welfare, academic continuity, or completion, and a credible recommender has direct knowledge.":"No recommender, non-urgent case, or a fuller picture is needed before decision."}</p><h4>Core file</h4><ul>{(urgent?["Emergency intake/application","Student ID + enrollment proof","Brief need statement","Character testimony + conflict declaration","Available proof + privacy consent","Verified payee details"]:["Full application + intent letter","Student ID + enrollment proof","Category documents","Financial context when available","Privacy and verification consent","Disbursement details","Prior utilization for repeats"]).map(x=><li key={x}>{x}</li>)}</ul><div className="track-time"><b>{urgent?"1–3 working days":"5 working days"}</b><small>{urgent?"24–48h provisional release up to ₱5,000 by 3 members; ratify later. Missing non-critical documents within 10 days.":"Interview and decision normally within 5 days of completeness; disbursement within 10 days after approval and FAO clearance."}</small></div></article>}
+function SessionCard({s}:{s:Session}){return <article className="sessionCard"><div><span className={`status ${status(s.date).toLowerCase()}`}>{status(s.date)}</span><span className="category">{s.category}</span></div><h3>{s.subject}</h3><dl><div><dt>When</dt><dd>{s.date?formatDate(s.date):s.recurring}<br/><b>{s.time}</b></dd></div>{s.tutor&&<div><dt>Tutor</dt><dd>{s.tutor}</dd></div>}{(s.mode||s.venue)&&<div><dt>Delivery</dt><dd>{[s.mode,s.venue].filter(Boolean).join(" · ")}</dd></div>}{s.audience&&<div><dt>For</dt><dd>{s.audience}</dd></div>}</dl><a href={s.link} target="_blank" rel="noopener noreferrer">Register for this service ↗</a></article>}
+function Welfare({title,children}:{title:string,children:React.ReactNode}){return <article><span>✦</span><h3>{title}</h3><p>{children}</p></article>}
