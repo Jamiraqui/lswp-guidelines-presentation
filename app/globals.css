@@ -49,4 +49,5 @@ footer{max-width:1320px;margin:24px auto 0;border-radius:48px 48px 0 0;backgroun
 /* Final supplied hero artwork */
 .hero .finalHero{height:540px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .hero .finalHero img{display:block;width:100%;height:100%;object-fit:contain}
+.aboutUnitPhoto{height:520px;background-image:url('/about-unit-v2.png');background-position:center;background-size:contain;background-repeat:no-repeat;background-color:#f2f1ed}
 @media(max-width:650px){.hero .finalHero{height:380px}}
