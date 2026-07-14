@@ -46,9 +46,7 @@ footer{max-width:1320px;margin:24px auto 0;border-radius:48px 48px 0 0;backgroun
 .contactPhoto{background-image:linear-gradient(0deg,#062b1870,transparent 62%),url('/ssc-campus-yuchengco.png');background-position:center 38%;background-size:cover}
 @media(max-width:650px){.hero .threeStep{inset:1%}.hero .stairOne{left:0;top:68%;width:42%;height:72px;border-radius:36px}.hero .riseOne{left:34%;top:49%;width:72px;height:calc(19% + 74px);border-radius:36px}.hero .stairTwo{left:34%;top:49%;width:39%;height:72px;border-radius:36px}.hero .riseTwo{left:64%;top:29%;width:72px;height:calc(20% + 74px);border-radius:36px}.hero .stairThree{left:64%;top:29%;width:36%;height:72px;border-radius:36px}}
 
-/* Final supplied image assets */
-.hero .finalHero{height:540px;background:transparent;overflow:hidden;display:flex;align-items:center;justify-content:center}
+/* Final supplied hero artwork */
+.hero .finalHero{height:540px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .hero .finalHero img{display:block;width:100%;height:100%;object-fit:contain}
-.campusFrame{background-image:url('/final-2.png');background-position:center 32%;background-size:cover}
-.contactPhoto{background-image:linear-gradient(0deg,#062b186a,transparent 58%),url('/final-2.png');background-position:center 34%;background-size:cover}
-@media(max-width:650px){.hero .finalHero{height:380px}.hero .finalHero img{width:108%;max-width:none}}
+@media(max-width:650px){.hero .finalHero{height:380px}}
