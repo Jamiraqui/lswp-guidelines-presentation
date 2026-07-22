@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Academic Support Hub | DLSU Student Success Center",
-  description: "Find tutorials, review classes, learning support, and student welfare assistance from the DLSU Student Success Center.",
+  title: "Starter Project",
+  description: "A clean starting point for building your site.",
   other: {
-    "application-name": "DLSU Academic Support Hub",
+    "codex-preview": "development",
   },
   icons: {
     icon: "/favicon.svg",
